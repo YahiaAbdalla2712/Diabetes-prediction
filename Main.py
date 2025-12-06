@@ -67,5 +67,44 @@ y = data['Outcome']
 #split the data into training and testing sets in the ratio of 70:30
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
 
+test_scores = []
+train_scores = []
+
+#calculate train and test scores at different k values to choose the best
+for i in range(1, 15):
+    knn = KNeighborsClassifier(n_neighbors=i)
+    knn.fit(X_train, y_train)
+    test_scores.append(knn.score(X_test, y_test))
+    train_scores.append(knn.score(X_train, y_train))
+
+max_train_score = max(train_scores) 
+train_scores_index = [i for i, v in enumerate(train_scores) if v == max_train_score]   
+print(f"Max train score: {max_train_score} at index {train_scores_index}")
+print("--------------------------------")
+
+
+max_test_score = max(test_scores) 
+test_scores_index = [i for i, v in enumerate(test_scores) if v == max_test_score]   
+print(f"Max test score: {max_test_score} at index {test_scores_index}")
+print("--------------------------------")
+
+#plot the train and test scores with respect to k values
+plt.figure(figsize=(12,5))
+p= sns.lineplot(x=range(1,15), y=train_scores, marker = '*', label = 'Train Score')
+p= sns.lineplot(x=range(1,15), y=test_scores, marker = 'o', label = 'Test Score')
+plt.show()
+
+#from graph best k = 13
+knn=KNeighborsClassifier(13)
+knn.fit(X_train,y_train)
+knn.score(X_test, y_test)
+
+y_hat = knn.predict(X_test)
+
+#create the confusion matrix
+confusion_matrix = (y_test, y_hat)
+
+#print classification_report
+print(classification_report(y_test, y_hat))
 
 
